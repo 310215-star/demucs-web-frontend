@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10110f" />
+    <meta name="description" content="在你的瀏覽器裡用 Demucs 分離人聲，輸出伴奏影片。" />
+    <title>伴奏 MV 製作室 · Demucs Web</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="伴奏 MV 製作室首頁">
+          <span class="brand-mark" aria-hidden="true">♪</span>
+          <span>音軌工作室</span>
+        </a>
+        <span class="privacy-pill"><span class="live-dot"></span> 本機瀏覽器處理</span>
+      </header>
+
+      <section class="intro" id="top">
+        <p class="eyebrow">DEMucs WEB · LOCAL MEDIA WORKFLOW</p>
+        <h1>把音樂留在畫面裡，<em>把人聲拿掉。</em></h1>
+        <p class="intro-copy">選擇影片，AI 會在你的瀏覽器裡分離伴奏，再輸出一支保留原畫面的 MV。</p>
+      </section>
+
+      <section class="workspace" aria-label="伴奏 MV 製作流程">
+        <div class="steps" aria-label="製作步驟">
+          <div class="step active" data-step="1"><span>01</span><b>選擇影片</b></div>
+          <div class="step" data-step="2"><span>02</span><b>分離人聲</b></div>
+          <div class="step" data-step="3"><span>03</span><b>下載 MV</b></div>
+        </div>
+
+        <div class="work-grid">
+          <div class="preview-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">VIDEO PREVIEW</span><h2>影片預覽</h2></div>
+              <span id="videoMeta" class="meta-label">尚未選擇影片</span>
+            </div>
+            <div class="video-frame" id="dropZone">
+              <video id="videoPreview" controls playsinline></video>
+              <div class="empty-state" id="emptyState">
+                <span class="upload-icon" aria-hidden="true">↑</span>
+                <strong>把影片放在這裡</strong>
+                <span>或瀏覽裝置中的檔案</span>
+                <span class="format-hint">MP4、MOV、WebM · 建議使用 MP4</span>
+                <button id="chooseButton" class="button button-quiet" type="button">選擇影片</button>
+              </div>
+            </div>
+            <input id="fileInput" type="file" accept="video/*,.mp4,.mov,.webm,.m4v" hidden />
+            <div class="file-row"><span class="file-indicator"></span><span id="fileName">尚未載入檔案</span><button id="changeButton" class="text-button" type="button" hidden>更換</button></div>
+          </div>
+
+          <aside class="control-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">SEPARATION</span><h2>伴奏分離</h2></div>
+              <span id="backendBadge" class="engine-badge">偵測運算模式…</span>
+            </div>
+
+            <div class="model-card">
+              <div class="model-art" aria-hidden="true"><span>♫</span><i></i><i></i><i></i><i></i></div>
+              <div class="model-copy"><strong>HTDemucs</strong><span>分離人聲與樂器音軌</span><small>模型約 172 MB · 首次載入需要下載</small></div>
+            </div>
+
+            <div class="privacy-note"><span aria-hidden="true">◈</span><p>影片、音訊和分離結果都在此裝置處理，不會上傳到伺服器。</p></div>
+
+            <section id="mixerPanel" class="mixer-panel" aria-label="音軌混音">
+              <div class="mixer-title"><div><span class="eyebrow">YOUR MIX</span><h3>音軌混音</h3></div><span id="stemCount" class="meta-label">分離後開啟</span></div>
+              <div id="stemList" class="stem-list mixer-placeholder">分離完成後可獨立調整鼓組、低音、其他樂器與人聲。</div>
+              <div class="mix-options">
+                <label class="option-label" for="keyShift">升降 Key <span id="keyValue">0 半音</span></label>
+                <div class="key-control"><button type="button" id="keyDown" aria-label="降半音" disabled>−</button><input id="keyShift" type="range" min="-12" max="12" step="1" value="0" disabled /><button type="button" id="keyUp" aria-label="升半音" disabled>+</button></div>
+                <label class="option-label" for="effectSelect">音樂效果</label>
+                <select id="effectSelect" class="effect-select" disabled><option value="clean">原音 · 不加效果</option><option value="electronic">電音氛圍 · Phaser + Echo</option></select>
+                <p class="mix-hint">升降 Key 會維持影片長度。電音模式加入相位與回音。「其他樂器」是合併音軌，模型不會再拆成鋼琴、吉他等單件樂器。</p>
+                <button id="previewMixButton" class="preview-mix-button" type="button" disabled>▶　預覽目前混音</button>
+                <audio id="mixPreview" controls hidden></audio>
+              </div>
+            </section>
+
+            <button id="processButton" class="button button-primary" type="button" disabled>
+              <span id="buttonIcon" aria-hidden="true">✦</span><span id="buttonLabel">先選擇一支影片</span><span class="button-arrow" aria-hidden="true">↗</span>
+            </button>
+
+            <div class="progress-area" aria-live="polite">
+              <div class="progress-top"><span id="status">等待選擇影片</span><span id="progressPercent"></span></div>
+              <div class="progress-track"><div id="progressFill"></div></div>
+              <div class="progress-foot"><span id="progressDetail">影片留在你的裝置裡</span><span id="eta"></span></div>
+            </div>
+
+            <a id="downloadButton" class="button button-download" hidden download="instrumental-mv.mp4">下載伴奏 MV <span aria-hidden="true">↓</span></a>
+            <div class="result-preview" id="resultPreview" hidden><span>完成的影片</span><video id="resultVideo" controls playsinline></video></div>
+          </aside>
+        </div>
+      </section>
+
+      <footer><span>由 <a href="https://github.com/timcsy/demucs-web" target="_blank" rel="noreferrer">Demucs Web</a> 與 FFmpeg WASM 驅動</span><span>模型及運算效能取決於裝置與瀏覽器</span></footer>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
